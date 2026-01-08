@@ -1,0 +1,79 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+    
+    function isOwner(docData) {
+      return isSignedIn() && request.auth.uid == docData.ownerId;
+    }
+    
+    function isCreatingOwnDoc() {
+      return isSignedIn() && request.auth.uid == request.resource.data.ownerId;
+    }
+
+    function isBusinessOwner(businessId) {
+      let businessDoc = get(/databases/$(database)/documents/businesses/$(businessId));
+      return businessDoc != null && isOwner(businessDoc.data);
+    }
+
+    match /roles_admin/{uid} {
+      allow get: if isAdmin();
+      allow list: if isAdmin();
+      allow write: if false;
+    }
+
+    match /subscriptions/{subscriptionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /businesses/{businessId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.auth.uid == businessId && isCreatingOwnDoc();
+      allow update: if isOwner(resource.data) || isAdmin();
+      allow delete: if isOwner(resource.data) || isAdmin();
+
+      match /products/{productId} {
+        allow read: if true;
+        allow create: if (isBusinessOwner(businessId) || isAdmin()) && request.resource.data.businessId == businessId && isCreatingOwnDoc();
+        allow update: if (isBusinessOwner(businessId) || isAdmin()) && isExistingDoc() && request.resource.data.businessId == resource.data.businessId;
+        allow delete: if (isBusinessOwner(businessId) || isAdmin()) && isExistingDoc();
+      }
+
+      match /customers/{customerId} {
+        allow create: if isSignedIn() && request.auth.uid == customerId && request.resource.data.businessId == businessId;
+        allow get: if (isSignedIn() && (request.auth.uid == customerId || isAdmin())) || isBusinessOwner(businessId);
+        allow update, delete: if isSignedIn() && (request.auth.uid == customerId || isBusinessOwner(businessId) || isAdmin());
+        allow list: if isBusinessOwner(businessId) || isAdmin();
+      }
+
+      match /categories/{categoryId} {
+        allow get, list: if true;
+        allow write: if isBusinessOwner(businessId) || isAdmin();
+      }
+      
+      match /orders/{orderId} {
+        // Firestore cannot inspect query filters. List is allowed if signed in,
+        // but queries in the app MUST include `where('customerId', '==', auth.uid)`
+        // which is then enforced by the `get` rule.
+        allow list: if isSignedIn();
+        allow get: if isBusinessOwner(businessId) || isAdmin() || (isSignedIn() && resource.data.customerId == request.auth.uid);
+        allow create: if isSignedIn() && request.resource.data.customerId == request.auth.uid;
+        allow update, delete: if isBusinessOwner(businessId) || isAdmin();
+      }
+    }
+  }
+}

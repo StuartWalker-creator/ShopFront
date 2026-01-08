@@ -1,0 +1,64 @@
+{
+  "placeholderImages": [
+    {
+      "id": "hero-image",
+      "description": "A vibrant abstract image for the hero section.",
+      "imageUrl": "https://images.unsplash.com/photo-1722353129214-df9638aab876?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhYnN0cmFjdCUyMG1vZGVybnxlbnwwfHx8fDE3NjQwMTMwNzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract modern"
+    },
+    {
+      "id": "shopfront-logo",
+      "description": "Logo for ShopFront",
+      "imageUrl": "https://images.unsplash.com/photo-1737384258303-dfa7a9faae17?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c2hvcCUyMGxvZ298ZW58MHx8fHwxNzY0MDEzMDc0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "shop logo"
+    },
+    {
+      "id": "product-placeholder",
+      "description": "A generic placeholder for a product without an image.",
+      "imageUrl": "https://images.unsplash.com/photo-1750056393288-fd4a4a77cae4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwcm9kdWN0JTIwcGxhY2Vob2xkZXJ8ZW58MHx8fHwxNzY3MTIyNTMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "product placeholder"
+    },
+    {
+      "id": "product-1",
+      "description": "A placeholder image for a product.",
+      "imageUrl": "https://images.unsplash.com/photo-1567015711662-285be623fb9d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb2Rlcm4lMjB3YXRjaHxlbnwwfHx8fDE3NjM5MjQxNDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern watch"
+    },
+    {
+      "id": "product-2",
+      "description": "A placeholder image for a product.",
+      "imageUrl": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3aXJlbGVzcyUyMGhlYWRwaG9uZXN8ZW58MHx8fHwxNzYzOTE0OTQ4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wireless headphones"
+    },
+    {
+      "id": "product-3",
+      "description": "A placeholder image for a product.",
+      "imageUrl": "https://images.unsplash.com/photo-1763598331665-1edbc163c126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxzdHlsaXNoJTIwYmFja3BhY2t8ZW58MHx8fHwxNzYzOTI0MTQ5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "stylish backpack"
+    },
+    {
+      "id": "product-4",
+      "description": "A placeholder image for a product.",
+      "imageUrl": "https://images.unsplash.com/photo-1529359744902-86b2ab9edaea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzbWFydCUyMHNwZWFrZXJ8ZW58MHx8fHwxNzYzOTk0Nzg0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smart speaker"
+    },
+    {
+      "id": "feature-showcase",
+      "description": "Image for showcase feature",
+      "imageUrl": "https://images.unsplash.com/photo-1542581482-851c38ee4b94?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxzdG9yZSUyMGZyb250fGVufDB8fHx8MTc2NDAxMzA3NHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "store front"
+    },
+    {
+      "id": "feature-products",
+      "description": "Image for product management feature",
+      "imageUrl": "https://images.unsplash.com/photo-1758387647847-5adec5462c84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwcm9kdWN0JTIwZ3JpZHxlbnwwfHx8fDE3NjQwMTMwNzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "product grid"
+    },
+    {
+      "id": "feature-admin",
+      "description": "Image for admin panel feature",
+      "imageUrl": "https://images.unsplash.com/photo-1659018966825-43297e655ccf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYXNoYm9hcmQlMjBjaGFydHxlbnwwfHx8fDE3NjQwMTMwNzR8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dashboard chart"
+    }
+  ]
+}

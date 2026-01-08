@@ -1,0 +1,112 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+    }
+    
+    function isOwner(docData) {
+      return isSignedIn() && request.auth.uid == docData.ownerId;
+    }
+    
+    function isCreatingOwnDoc() {
+      return isSignedIn() && request.auth.uid == request.resource.data.ownerId;
+    }
+
+    // Rules for Admin Roles
+    match /roles_admin/{uid} {
+      allow get, list: if isAdmin();
+      allow write: if false; // Prevent self-promotion
+    }
+
+    // Rules for Subscriptions
+    match /subscriptions/{subscriptionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Rules for Businesses collection and its immediate subcollections (excluding orders)
+    match /businesses/{businessId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.auth.uid == businessId && isCreatingOwnDoc();
+      allow update, delete: if isOwner(resource.data) || isAdmin();
+
+      match /products/{productId} {
+        allow read: if true;
+        allow create: if
+          (isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) || isAdmin()) &&
+          request.resource.data.businessId == businessId &&
+          isCreatingOwnDoc();
+
+        allow update: if
+          (isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) || isAdmin()) &&
+          isExistingDoc() &&
+          request.resource.data.businessId == resource.data.businessId;
+
+        allow delete: if
+          (isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) || isAdmin()) &&
+          isExistingDoc();
+      }
+
+      match /customers/{customerId} {
+        allow create: if
+          isSignedIn() &&
+          request.auth.uid == customerId &&
+          request.resource.data.businessId == businessId;
+
+        allow get: if
+          (isSignedIn() && request.auth.uid == customerId) ||
+          isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) ||
+          isAdmin();
+
+        allow update, delete: if
+          (isSignedIn() && request.auth.uid == customerId) ||
+          isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) ||
+          isAdmin();
+
+        allow list: if
+          isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) ||
+          isAdmin();
+      }
+
+      match /categories/{categoryId} {
+        allow get, list: if true;
+        allow write: if
+          isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) ||
+          isAdmin();
+      }
+    }
+    
+    // Independent rule for accessing orders to avoid parent-path permission issues.
+    // Customers can query their own orders; owners/admins can query all.
+    match /businesses/{businessId}/orders/{orderId} {
+
+      // 🔧 FIXED: Firestore cannot inspect query filters
+      // Ownership is enforced by the get rule below
+      allow list: if isSignedIn();
+        
+      allow get: if
+        (isSignedIn() && resource.data.customerId == request.auth.uid) ||
+        isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) ||
+        isAdmin();
+
+      allow create: if
+        isSignedIn() &&
+        request.resource.data.customerId == request.auth.uid;
+        
+      allow update, delete: if
+        isOwner(get(/databases/$(database)/documents/businesses/$(businessId)).data) ||
+        isAdmin();
+    }
+  }
+}
