@@ -79,8 +79,9 @@ return query(baseQuery, where('customerId', '==', customerId));
 }
 
 return baseQuery;
-}, [firestore, businessId, customerId]);console.error('businessId: ',businessId)
-    })})
+}, [firestore, businessId, customerId]);
+console.error('businessId: ',businessId)
+  //  })})
     
  const { data: orders, isLoading: areOrdersLoading, error } = useCollection<Order>(ordersQuery);
 
