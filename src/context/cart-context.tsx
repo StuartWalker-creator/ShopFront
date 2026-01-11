@@ -47,6 +47,7 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
               const customerRef = doc(firestore, 'businesses', businessId, 'customers', user.uid);
               const cartForDb = newCart.map(({ id, quantity }) => ({ productId: id, quantity }));
               await setDoc(customerRef, { cart: cartForDb }, { merge: true });
+              localStorage.removeItem(`cart_${businessId}`)
           } catch (error) {
               console.error("Failed to sync cart to Firestore:", error);
           }
