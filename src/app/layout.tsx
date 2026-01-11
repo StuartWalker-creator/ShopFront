@@ -3,7 +3,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from '@/components/ui/toaster';
-
+import "@/lib/disable-localstorage";
 export const metadata: Metadata = {
   title: 'ShopFront',
   description: 'Create and manage your online storefront with ease.',
