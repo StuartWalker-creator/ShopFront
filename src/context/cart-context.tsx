@@ -6,6 +6,7 @@ import { useFirestore } from '@/firebase';
 import { doc, setDoc, getDocs, collection, query, where, documentId } from 'firebase/firestore';
 import type { Product } from '@/types/product';
 import { useCustomer } from './customer-context';
+import { safeLocalStorage as storage } from "@/utils/browserStorage";
 
 const isBrowser = () => typeof window !== "undefined";
 
@@ -50,7 +51,7 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
               const cartForDb = newCart.map(({ id, quantity }) => ({ productId: id, quantity }));
               await setDoc(customerRef, { cart: cartForDb }, { merge: true });
         if (isBrowser()) {
-              localStorage.removeItem(`cart_${businessId}`);
+              storage.removeItem(`cart_${businessId}`);
               }         
           } catch (error) {
               console.error("Failed to sync cart to Firestore:", error);
@@ -80,7 +81,7 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
       setIsCartLoading(true);
       if (isBrowser()) {
   try {
-    const localCartData = localStorage.getItem(`cart_${businessId}`);
+    const localCartData = storage.getItem(`cart_${businessId}`);
     setCartItems(localCartData ? JSON.parse(localCartData) : []);
   } catch (error) {
     console.error("Failed to load cart from local storage:", error);
@@ -134,7 +135,7 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
       if (customer) {
           syncCartToDb(newCart);
       } else if (isBrowser()) {
-  localStorage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
+  storage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
 }
   }
 
@@ -155,7 +156,7 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
         if (customer) {
             syncCartToDb(newCart);
         } else if (isBrowser()) {
-  localStorage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
+  storage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
 }
 
         return newCart;

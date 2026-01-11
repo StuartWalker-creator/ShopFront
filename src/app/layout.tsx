@@ -1,8 +1,10 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ThemeProvider } from '@/components/theme-provider';
+import { Providers } from "@/context/client-providers"; // <-- lazy client wrapper
+import { BusinessProvider, useBusiness } from '@/context/business-context';
 
 export const metadata: Metadata = {
   title: 'ShopFront',
@@ -11,9 +13,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
+   const { business } = useBusiness();
+
+  const businessId = business?.id; // set this dynamically if needed
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
@@ -25,7 +29,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <FirebaseClientProvider>
-            {children}
+            <Providers businessId={businessId}>  {/* <-- lazy-loaded CartProvider */}
+              {children}
+            </Providers>
           </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
