@@ -24,7 +24,7 @@ import { Eye, EyeOff } from "lucide-react";
 export default function StoreSignupPage() {
   const router = useRouter();
   const params = useParams();
-  const businessId = params.businessId as string;
+  const businessId =params.businessId as string;
   const auth = useAuth();
   const firestore = useFirestore();
   const { toast } = useToast();

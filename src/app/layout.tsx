@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
+import { useRouter, useParams } from "next/navigation";
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Providers } from "@/context/client-providers"; // <-- lazy client wrapper
@@ -14,9 +15,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-   const { business } = useBusiness();
-
-  const businessId = business?.id; // set this dynamically if needed
+   //const { business } = useBusiness();
+   const params = useParams();
+  const businessId =params.businessId as string;
+  const businessId = businessId; // set this dynamically if needed
 
   return (
     <html lang="en" suppressHydrationWarning>
