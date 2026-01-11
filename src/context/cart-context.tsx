@@ -7,6 +7,8 @@ import { doc, setDoc, getDocs, collection, query, where, documentId } from 'fire
 import type { Product } from '@/types/product';
 import { useCustomer } from './customer-context';
 
+const isBrowser = () => typeof window !== "undefined";
+
 interface CartItem extends Product {
   quantity: number;
 }
@@ -47,7 +49,9 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
               const customerRef = doc(firestore, 'businesses', businessId, 'customers', user.uid);
               const cartForDb = newCart.map(({ id, quantity }) => ({ productId: id, quantity }));
               await setDoc(customerRef, { cart: cartForDb }, { merge: true });
-              localStorage.removeItem(`cart_${businessId}`)
+        if (isBrowser()) {
+              localStorage.removeItem(`cart_${businessId}`);
+              }         
           } catch (error) {
               console.error("Failed to sync cart to Firestore:", error);
           }
@@ -74,13 +78,17 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
     // USER IS LOGGED OUT
     if (!currentUserId || !customer) {
       setIsCartLoading(true);
-      try {
-        const localCartData = localStorage.getItem(`cart_${businessId}`);
-        setCartItems(localCartData ? JSON.parse(localCartData) : []);
-      } catch (error) {
-        console.error("Failed to load cart from local storage:", error);
-        setCartItems([]);
-      }
+      if (isBrowser()) {
+  try {
+    const localCartData = localStorage.getItem(`cart_${businessId}`);
+    setCartItems(localCartData ? JSON.parse(localCartData) : []);
+  } catch (error) {
+    console.error("Failed to load cart from local storage:", error);
+    setCartItems([]);
+  }
+} else {
+  setCartItems([]);
+}
       setIsCartLoading(false);
       return;
     }
@@ -125,9 +133,9 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
       setCartItems(newCart);
       if (customer) {
           syncCartToDb(newCart);
-      } else {
-          localStorage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
-      }
+      } else if (isBrowser()) {
+  localStorage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
+}
   }
 
   const addToCart = (product: Product) => {
@@ -146,9 +154,9 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
         
         if (customer) {
             syncCartToDb(newCart);
-        } else {
-            localStorage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
-        }
+        } else if (isBrowser()) {
+  localStorage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
+}
 
         return newCart;
     });
