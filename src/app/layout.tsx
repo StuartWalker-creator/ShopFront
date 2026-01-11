@@ -1,11 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import { useRouter, useParams } from "next/navigation";
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Providers } from "@/context/client-providers"; // <-- lazy client wrapper
-import { BusinessProvider, useBusiness } from '@/context/business-context';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'ShopFront',
@@ -14,26 +11,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
-   //const { business } = useBusiness();
-   const params = useParams();
-  const businessId =params.businessId as string;
-  const businessId = businessId; // set this dynamically if needed
-
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head />
-      <body className="font-body antialiased min-h-screen bg-background">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <FirebaseClientProvider>
-            <Providers businessId={businessId}>  {/* <-- lazy-loaded CartProvider */}
-              {children}
-            </Providers>
+            {children}
           </FirebaseClientProvider>
           <Toaster />
         </ThemeProvider>
