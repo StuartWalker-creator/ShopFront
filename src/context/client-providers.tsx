@@ -3,12 +3,21 @@
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
 
-// Lazy-load CartProvider
 const CartProvider = dynamic(
-  () => import("./cart-context").then(mod => mod.CartProvider),
+  () => import("./cart-context").then(m => m.CartProvider),
   { ssr: false }
 );
 
-export function Providers({ children, businessId }: { children: ReactNode, businessId: string }) {
-  return <CartProvider businessId={businessId}>{children}</CartProvider>;
+export function Providers({
+  children,
+  businessId,
+}: {
+  children: ReactNode;
+  businessId: string;
+}) {
+  return (
+    <CartProvider businessId={businessId}>
+      {children}
+    </CartProvider>
+  );
 }

@@ -8,7 +8,7 @@ import type { Product } from '@/types/product';
 import { useCustomer } from './customer-context';
 import { safeLocalStorage as storage } from "@/utils/browserStorage";
 
-const isBrowser = () => typeof window !== "undefined";
+//const isBrowser = () => typeof window !== "undefined";
 
 interface CartItem extends Product {
   quantity: number;
@@ -40,6 +40,12 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
   const firestore = useFirestore();
 
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [hasMounted, setHasMounted] = useState(false);
+
+useEffect(() => {
+  setHasMounted(true);
+}, []);
+
   const [isCartLoading, setIsCartLoading] = useState(true);
   const lastUserId = useRef<string | null>(null);
 
@@ -50,10 +56,9 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
               const customerRef = doc(firestore, 'businesses', businessId, 'customers', user.uid);
               const cartForDb = newCart.map(({ id, quantity }) => ({ productId: id, quantity }));
               await setDoc(customerRef, { cart: cartForDb }, { merge: true });
-        if (isBrowser()) {
-              storage.removeItem(`cart_${businessId}`);
-              }         
-          } catch (error) {
+if (hasMounted) {
+  window.localStorage?.removeItem(`cart_${businessId}`);
+}          } catch (error) {
               console.error("Failed to sync cart to Firestore:", error);
           }
       }
@@ -79,15 +84,15 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
     // USER IS LOGGED OUT
     if (!currentUserId || !customer) {
       setIsCartLoading(true);
-      if (isBrowser()) {
-  try {
-    const localCartData = storage.getItem(`cart_${businessId}`);
-    setCartItems(localCartData ? JSON.parse(localCartData) : []);
-  } catch (error) {
-    console.error("Failed to load cart from local storage:", error);
-    setCartItems([]);
-  }
-} else {
+      if (!hasMounted) {
+  setIsCartLoading(false);
+  return;
+}
+
+try {
+  const stored = window.localStorage?.getItem(`cart_${businessId}`);
+  setCartItems(stored ? JSON.parse(stored) : []);
+} catch {
   setCartItems([]);
 }
       setIsCartLoading(false);
@@ -134,8 +139,11 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
       setCartItems(newCart);
       if (customer) {
           syncCartToDb(newCart);
-      } else if (isBrowser()) {
-  storage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
+      } else if (hasMounted) {
+  window.localStorage?.setItem(
+    `cart_${businessId}`,
+    JSON.stringify(newCart)
+  );
 }
   }
 
@@ -155,8 +163,11 @@ export function CartProvider({ children, businessId }: { children: ReactNode, bu
         
         if (customer) {
             syncCartToDb(newCart);
-        } else if (isBrowser()) {
-  storage.setItem(`cart_${businessId}`, JSON.stringify(newCart));
+        } else if (hasMounted) {
+  window.localStorage?.setItem(
+    `cart_${businessId}`,
+    JSON.stringify(newCart)
+  );
 }
 
         return newCart;
