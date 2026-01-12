@@ -61,9 +61,11 @@ export default function OrdersPage() {
 
     const [orderToDelete, setOrderToDelete] = useState<Order | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
-    console.error('businessId: ',businessId)
+    console.error('businessId-1: ',businessId)
 const ordersQuery = useMemoFirebase(() => {
   if (!firestore || !businessId) return null;
+
+    console.error('businessId-inside: ',businessId)
 
   const baseQuery = query(
     collection(firestore, 'businesses', businessId, 'orders'),
@@ -80,6 +82,7 @@ const ordersQuery = useMemoFirebase(() => {
   return baseQuery;
 }, [firestore, businessId, customerId]);
 console.error('businessId: ',businessId)
+console.error('ordersQuery: ',ordersQuery)
   //  })})
     
  const { data: orders, isLoading: areOrdersLoading, error } = useCollection<Order>(ordersQuery);
